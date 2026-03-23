@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-03-08T23:12:00.000Z",
+  "sessions": {
+    "count": 28,
+    "byAgent": [
+      {"agent": "jesse", "sessions": 5, "lastActive": "2026-03-08T23:13:55.602Z", "models": ["glm-5"]},
+      {"agent": "walt", "sessions": 7, "lastActive": "2026-03-08T23:07:08.568Z", "models": ["qwen3.5-plus"]},
+      {"agent": "saul", "sessions": 3, "lastActive": "2026-03-08T17:41:27.224Z", "models": ["qwen3.5-plus"]},
+      {"agent": "badger", "sessions": 2, "lastActive": "2026-03-08T16:40:32.558Z", "models": ["kimi-k2.5"]},
+      {"agent": "lydia", "sessions": 4, "lastActive": "2026-03-08T16:40:28.471Z", "models": ["qwen3.5-plus"]},
+      {"agent": "gus", "sessions": 4, "lastActive": "2026-03-08T16:40:22.156Z", "models": ["qwen3.5-plus"]},
+      {"agent": "combo", "sessions": 2, "lastActive": "2026-03-08T16:40:16.503Z", "models": ["qwen3.5-plus"]}
+    ]
+  },
+  "agents": {
+    "active": ["jesse", "walt", "saul", "badger", "lydia", "gus", "combo"],
+    "total": 7
+  },
+  "costs": {
+    "total": 0,
+    "byModel": {
+      "qwen3.5-plus": {"sessions": 20, "contextTokens": 20000000},
+      "glm-5": {"sessions": 5, "contextTokens": 1013760},
+      "kimi-k2.5": {"sessions": 2, "contextTokens": 524288}
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "byCategory": [
+    {
+      "category": "agent",
+      "count": 13
+    },
+    {
+      "category": "apis",
+      "count": 1
+    },
+    {
+      "category": "empire",
+      "count": 2
+    },
+    {
+      "category": "heartbeat",
+      "count": 1
+    },
+    {
+      "category": "mission",
+      "count": 4
+    },
+    {
+      "category": "project",
+      "count": 2
+    },
+    {
+      "category": "roadmap",
+      "count": 3
+    },
+    {
+      "category": "skills",
+      "count": 16
+    },
+    {
+      "category": "status",
+      "count": 1
+    },
+    {
+      "category": "strategy",
+      "count": 1
+    },
+    {
+      "category": "user",
+      "count": 3
+    }
+  ],
+  "exportedAt": "2026-03-09T14:45:43.392Z"
+}
