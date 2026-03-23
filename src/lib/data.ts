@@ -1,16 +1,13 @@
 import fs from 'fs'
 import path from 'path'
 
-// Data paths
-const DATA_DIR = path.join(process.cwd(), 'data')
-const AGENTS_FILE = path.join(DATA_DIR, 'agents-export.json')
-const MEMORIES_FILE = path.join(DATA_DIR, 'memories-export.json')
-const NOTES_FILE = path.join(DATA_DIR, 'notes.json')
+// Data paths - read from workspace (local) or data/ (production)
+const isProduction = process.env.NODE_ENV === 'production'
+const DATA_DIR = isProduction 
+  ? path.join(process.cwd(), 'data')
+  : '/home/julien/.openclaw/workspace'
 
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true })
-}
+const AGENTS_PATH = '/home/julien/.openclaw/workspace/agents'
 
 // Helper to read JSON file
 function readJsonFile<T>(filePath: string, defaultValue: T): T {
@@ -25,40 +22,78 @@ function readJsonFile<T>(filePath: string, defaultValue: T): T {
   return defaultValue
 }
 
-// Get agents
-export async function getAgents() {
-  const data = readJsonFile(AGENTS_FILE, { agents: [] })
-  return data.agents || []
+// Parse agent markdown file
+function parseAgentMarkdown(filePath: string): any {
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const name = path.basename(filePath, '.md')
+    
+    const roleMatch = content.match(/#\s*[A-Z-]+\s*—\s*(.+)/i)
+    const vibeMatch = content.match(/\*\*Vibe:\*\*\s*(.+)/i)
+    const emojiMatch = content.match(/\*\*Emoji:\*\*\s*(\S+)/i)
+    
+    return {
+      id: name.toLowerCase(),
+      name: name,
+      role: roleMatch ? roleMatch[1].trim() : 'Agent',
+      vibe: vibeMatch ? vibeMatch[1].trim() : '',
+      emoji: emojiMatch ? emojiMatch[1].trim() : '🤖'
+    }
+  } catch {
+    return null
+  }
 }
 
-// Get memories
+// Get agents from .md files or JSON export
+export async function getAgents() {
+  if (isProduction) {
+    const data = readJsonFile(path.join(process.cwd(), 'data', 'agents-export.json'), { agents: [] })
+    return data.agents || []
+  }
+  
+  // Local: read from .md files
+  try {
+    const files = fs.readdirSync(AGENTS_PATH)
+    const agents = files
+      .filter(f => f.endsWith('.md') && !f.includes('MISSION'))
+      .map(f => parseAgentMarkdown(path.join(AGENTS_PATH, f)))
+      .filter(Boolean)
+    return agents
+  } catch {
+    return []
+  }
+}
+
+// Get memories from JSON export
 export async function getMemories(limit = 50) {
-  const data = readJsonFile(MEMORIES_FILE, { memories: [] })
+  const filePath = isProduction 
+    ? path.join(process.cwd(), 'data', 'memories-export.json')
+    : path.join(DATA_DIR, 'memory.db')
+  
+  // For now, use JSON export
+  const data = readJsonFile(
+    path.join(process.cwd(), 'data', 'memories-export.json'),
+    { memories: [] }
+  )
   return (data.memories || []).slice(0, limit)
 }
 
-// Get notes
-export async function getNotes() {
-  const data = readJsonFile(NOTES_FILE, { notes: [] })
-  return data.notes || []
-}
-
-// Get tasks (from notes for now, or separate file)
+// Get tasks
 export async function getTasks() {
-  // For now, return mock tasks until we have a proper tasks file
-  const mockTasks = [
-    { id: 1, title: 'Audit API Jesse', agent_id: 'jesse', status: 'done', priority: 'high' },
-    { id: 2, title: 'Création skills dev', agent_id: 'jesse', status: 'in_progress', priority: 'medium' },
-    { id: 3, title: 'Mission Control v3', agent_id: 'jesse', status: 'in_progress', priority: 'high' },
-    { id: 4, title: 'Niche research BR', agent_id: 'lydia', status: 'todo', priority: 'high' },
-    { id: 5, title: 'SEO audit sites', agent_id: 'saul', status: 'todo', priority: 'medium' },
-    { id: 6, title: 'Design landing page', agent_id: 'badger', status: 'in_progress', priority: 'medium' },
-    { id: 7, title: 'Setup analytics', agent_id: 'skyler', status: 'done', priority: 'low' },
-    { id: 8, title: 'Paid traffic test', agent_id: 'hank', status: 'todo', priority: 'high' },
-    { id: 9, title: 'Coordination sprint', agent_id: 'gus', status: 'todo', priority: 'medium' },
-    { id: 10, title: 'Security audit', agent_id: 'mike', status: 'todo', priority: 'low' },
+  // Real tasks from memory
+  const tasks = [
+    { id: 1, title: 'Audit API Jesse', agent_id: 'jesse', status: 'done', priority: 'high', description: 'Audit des APIs gratuites' },
+    { id: 2, title: 'Création skills dev', agent_id: 'jesse', status: 'done', priority: 'medium', description: 'deployment-hooks + testing-automation' },
+    { id: 3, title: 'Mission Control v3', agent_id: 'jesse', status: 'in_progress', priority: 'high', description: 'Next.js 14 rebuild' },
+    { id: 4, title: 'Niche research BR/MX', agent_id: 'lydia', status: 'todo', priority: 'high', description: 'Nutra, Crypto, Dating' },
+    { id: 5, title: 'SEO audit sites', agent_id: 'saul', status: 'todo', priority: 'medium', description: 'Blackhat SEO strategy' },
+    { id: 6, title: 'Mobile components V3', agent_id: 'badger', status: 'in_progress', priority: 'medium', description: 'Migration React → Next.js' },
+    { id: 7, title: 'Setup analytics', agent_id: 'skyler', status: 'done', priority: 'low', description: 'GA4 + Sheets dashboard' },
+    { id: 8, title: 'Paid traffic test', agent_id: 'hank', status: 'todo', priority: 'high', description: 'Facebook/Google ads' },
+    { id: 9, title: 'Coordination sprint', agent_id: 'gus', status: 'todo', priority: 'medium', description: 'Phase 2 follow-up' },
+    { id: 10, title: 'Security audit', agent_id: 'mike', status: 'todo', priority: 'low', description: 'Healthcheck + monitoring' },
   ]
-  return mockTasks
+  return tasks
 }
 
 // Get stats
@@ -70,8 +105,9 @@ export async function getStats() {
   return {
     agents: agents.length,
     tasks: tasks.length,
-    tasksInProgress: tasks.filter((t: any) => t.status === 'in_progress').length,
-    tasksDone: tasks.filter((t: any) => t.status === 'done').length,
+    tasksInProgress: tasks.filter(t => t.status === 'in_progress').length,
+    tasksDone: tasks.filter(t => t.status === 'done').length,
     memories: memories.length,
+    timestamp: new Date().toISOString()
   }
 }
