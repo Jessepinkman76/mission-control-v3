@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { MobileHeader, DesktopSidebar } from '@/components/Navigation'
+import { MobileHeader, DesktopSidebar } from '../components/Navigation'
 
 export const metadata: Metadata = {
   title: 'Mission Control - Empire Julien',

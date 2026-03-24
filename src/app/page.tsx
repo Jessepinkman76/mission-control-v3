@@ -1,8 +1,8 @@
-import { MobileAgentsList } from '@/components/MobileAgents'
-import { MobileTasksList } from '@/components/MobileTasks'
-import { MobileStatsCard, MobileStatsScroll } from '@/components/MobileStats'
-import { StatsCard } from '@/components/StatsCard'
-import { getAgents, getTasks, getStats } from '@/lib/data'
+import { MobileAgentsList } from '../components/MobileAgents'
+import { MobileTasksList } from '../components/MobileTasks'
+import { MobileStatsCard, MobileStatsScroll } from '../components/MobileStats'
+import { StatsCard } from '../components/StatsCard'
+import { getAgents, getTasks, getStats } from '../lib/data'
 
 export default async function Home() {
   const agents = await getAgents()
