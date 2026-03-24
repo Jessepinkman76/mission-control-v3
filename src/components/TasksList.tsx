@@ -1,4 +1,4 @@
-import { getTasks } from '@/lib/data'
+import { getTasks } from '../lib/data'
 
 export async function TasksList() {
   const tasks = await getTasks()

@@ -102,11 +102,16 @@ export async function getStats() {
   const tasks = await getTasks()
   const memories = await getMemories()
   
+  const tasksInProgress = tasks.filter(t => t.status === 'in_progress').length
+  const tasksDone = tasks.filter(t => t.status === 'done').length
+  
   return {
     agents: agents.length,
     tasks: tasks.length,
-    tasksInProgress: tasks.filter(t => t.status === 'in_progress').length,
-    tasksDone: tasks.filter(t => t.status === 'done').length,
+    tasksInProgress,
+    tasksDone,
+    inProgress: tasksInProgress,  // alias for UI compatibility
+    completed: tasksDone,          // alias for UI compatibility
     memories: memories.length,
     timestamp: new Date().toISOString()
   }
