@@ -7,4 +7,4 @@ export async function GET() {
     service: 'mission-control-v3',
     version: '1.0.0'
   })
-}
+}// v1774342338
